@@ -7,13 +7,12 @@
  * Return: 0 on success
  */
 
-int main(int ac,char **av, char **env)
+int main(int ac, char** av, char **env)
 {
-	char* args[] = {NULL, NULL};
+	char** args = malloc(MAX_CAPACITY * sizeof(char*));
 	char *buf = NULL;
 	size_t count;
 	ssize_t read;
-	pid_t pid;
 	check file = false;
 
 	while(1 && !file)
@@ -36,24 +35,36 @@ int main(int ac,char **av, char **env)
 		{
 			write(2, "Type command", 10);
 		}
-		args[0] = buf;
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("Error in forking");
-			exit(EXIT_FAILURE);
-			return (1);
-		}
-		else if (pid == 0)
-		{
-			if (execve(args[0], args, env) == -1)
-				perror(*av);
-		}
-		else
-		{
-			waitpid(pid, NULL, 0);
-		}
+		args = _strtok(buf);
+		_execute(args, env, av);
+		free(args);
 	}
 	free (buf);
-	return (0);
+        return (0);
+}
+/**
+ * _execute -executes binary files commands
+ * @args: pointer to command string
+ * @env: pointer to envronment string
+ * Return: void
+ */
+void _execute(char **args, char **env, char **command)
+{
+	pid_t pid;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("Error in forking");
+		exit(EXIT_FAILURE);
+	}
+	else if (pid == 0)
+	{
+		if (execve(args[0], args, env) == -1)
+			perror(*command);
+	}
+	else
+	{
+		waitpid(pid, NULL, 0);
+	}
 }
