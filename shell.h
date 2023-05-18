@@ -6,4 +6,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 extern char** environ;
+typedef enum interactive
+{false,
+ true
+} check;
 #endif 

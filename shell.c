@@ -7,21 +7,21 @@
  * Return: 0 on success
  */
 
-int main(int ac, char **env)
+int main(int ac,char **av, char **env)
 {
 	char* args[] = {NULL, NULL};
 	char *buf = NULL;
 	size_t count;
 	ssize_t read;
-	int i;
 	pid_t pid;
+	check file = false;
 
-	while(1)
+	while(1 && !file)
 	{
-		i = isatty(STDIN_FILENO);
-		if (i == 1 || i == 0)
+		if (isatty(STDIN_FILENO == 0))
+				file = true;
 		{
-			write(STDOUT_FILENO, "#CisFun$", 9);
+			write(STDOUT_FILENO, "#CisFun$ ", 10);
 		}
 		read = getline(&buf, &count, stdin);
 		if (read == -1)
@@ -47,7 +47,7 @@ int main(int ac, char **env)
 		else if (pid == 0)
 		{
 			if (execve(args[0], args, env) == -1)
-				perror("error in execve");
+				perror(*av);
 		}
 		else
 		{
