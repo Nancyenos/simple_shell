@@ -7,9 +7,9 @@
  * Return: 0 on success
  */
 
-int main(int ac, char **av)
+int main(int ac, char **env)
 {
-	char** args;
+	char* args[] = {NULL, NULL};
 	char *buf = NULL;
 	size_t count;
 	ssize_t read;
@@ -19,7 +19,7 @@ int main(int ac, char **av)
 	while(1)
 	{
 		i = isatty(STDIN_FILENO);
-		if (i == 1)
+		if (i == 1 || i == 0)
 		{
 			write(STDOUT_FILENO, "#CisFun$", 9);
 		}
@@ -30,28 +30,30 @@ int main(int ac, char **av)
 			free(buf);
 			exit(EXIT_FAILURE);
 		}
-	}
-	if (ac < 2)
-	{
-		write(2, "Type command", 10);
-	}
-	args = &av[1];
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("Error in forking");
+		if (buf[read - 1] == '\n')
+		buf[read -1] = '\0';
+		if (ac < 1)
+		{
+			write(2, "Type command", 10);
+		}
+		args[0] = buf;
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("Error in forking");
 			exit(EXIT_FAILURE);
-		return (1);
+			return (1);
+		}
+		else if (pid == 0)
+		{
+			if (execve(args[0], args, env) == -1)
+				perror("error in execve");
+		}
+		else
+		{
+			waitpid(pid, NULL, 0);
+		}
 	}
-	else if (pid == 0)
-	{
-		 if (execve(args[0], args, environ) == -1)
-			 perror("error in execve");
-	}
-	else
-	{
-		 waitpid(pid, NULL, 0);
-	}
-
+	free (buf);
 	return (0);
 }
