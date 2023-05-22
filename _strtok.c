@@ -5,7 +5,7 @@
  * Return: pointer to pieces
  */
 
-char** _strtok(char *string)
+char **_strtok(char *string)
 {
 	int count = 0;
 	int capacity = MAX_CAPACITY;
@@ -13,7 +13,7 @@ char** _strtok(char *string)
 	char *delim = DELIMITER;
 	char *token;
 
-	tokens = malloc(capacity * sizeof(char*));
+	tokens = malloc(capacity * sizeof(char *));
 	if (tokens == NULL)
 	{
 		perror("Memory allocation error");

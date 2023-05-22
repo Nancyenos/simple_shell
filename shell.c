@@ -7,20 +7,20 @@
  * Return: 0 on success
  */
 
-int main(int ac, char** av, char **env)
+int main(int ac, char **av, char **env)
 {
-	char** args = malloc(MAX_CAPACITY * sizeof(char*));
+	char **args = malloc(MAX_CAPACITY * sizeof(char *));
 	char *buf = NULL;
 	size_t count;
 	ssize_t read;
 	check file = false;
 
-	while(1 && !file)
+	while (1 && !file)
 	{
 		if (isatty(STDIN_FILENO == 0))
 				file = true;
 		{
-			write(STDOUT_FILENO, "#CisFun$ ", 10);
+			write(STDOUT_FILENO, "#cisfun$ ", 10);
 		}
 		read = getline(&buf, &count, stdin);
 		if (read == -1)
@@ -30,7 +30,7 @@ int main(int ac, char** av, char **env)
 			exit(EXIT_FAILURE);
 		}
 		if (buf[read - 1] == '\n')
-		buf[read -1] = '\0';
+		buf[read - 1] = '\0';
 		if (ac < 1)
 		{
 			write(2, "Type command", 10);
@@ -38,12 +38,13 @@ int main(int ac, char** av, char **env)
 		args = _strtok(buf);
 		_execute(args, env, av);
 		free(args);
+	free(buf);
 	}
-	free (buf);
-        return (0);
+	return (0);
 }
 /**
  * _execute -executes binary files commands
+ * @command - character pointer
  * @args: pointer to command string
  * @env: pointer to envronment string
  * Return: void
@@ -67,4 +68,24 @@ void _execute(char **args, char **env, char **command)
 	{
 		waitpid(pid, NULL, 0);
 	}
+}
+
+/**
+* exitor - a function to exit from the program
+* @line: an array of command and arguments
+*
+* Return: no return
+*/
+
+int exitor(char *line[])
+{
+int i = 0;
+if (line[1] == NULL)
+{
+exit(EXIT_SUCCESS); }
+else if (atoi(line[1]) > 0)
+{
+i = atoi(line[1]); }
+free(line);
+exit(i);
 }
