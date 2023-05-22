@@ -51,18 +51,14 @@ int maker(char *line[]);
 int strcomp(char *str, char *equ);
 int echorr(char *line[]);
 void _execute(char **args, char **env, char **command);
-char** _strtok(char *string);
+char **_strtok(char *string);
 int (*getfunc(char *str))(char **line);
 int proc(char **line, char **argv);
-
 void sigintHandler(int sig_num __attribute__((unused)));
 void printprompt(int i);
-
-
 int getstr(char *str);
 int shellprocessor(char **line, char **argv);
 char **strbrk(char *line, char c);
-
 void farewell(void);
 void description(void);
 void strcopy(char *src, char *dest);
