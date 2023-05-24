@@ -1,91 +1,97 @@
 #include "shell.h"
+
 /**
- * main -runs our own  simpleshell program
- * @ac: argument count
- * @av: argument vector ,pointer to arry of arguments
- * @env: settings and environment
- * Return: 0 on success
+ * copyarr - This is a function to copy string array to another 
+ *              string array variable
+ * @line: a string array to be copied
+ * 
+ * Return: returns the copied array
  */
 
-int main(int ac, char **av, char **env)
+char **copyarr(char **line)
 {
-	char **args = malloc(MAX_CAPACITY * sizeof(char *));
-	char *buf = NULL;
-	size_t count;
-	ssize_t read;
-	check file = false;
+char **arr;
+int i = 1;
 
-	while (1 && !file)
-	{
-		if (isatty(STDIN_FILENO == 0))
-				file = true;
-		{
-			write(STDOUT_FILENO, "#cisfun$ ", 10);
-		}
-		read = getline(&buf, &count, stdin);
-		if (read == -1)
-		{
-			perror("Error in Reading input");
-			free(buf);
-			exit(EXIT_FAILURE);
-		}
-		if (buf[read - 1] == '\n')
-		buf[read - 1] = '\0';
-		if (ac < 1)
-		{
-			write(2, "Type command", 10);
-		}
-		args = _strtok(buf);
-		_execute(args, env, av);
-		free(args);
-	free(buf);
-	}
-	return (0);
+arr = malloc(64);
+if (!arr)
+return (NULL);
+
+while (line[i] != NULL)
+{
+arr[(i - 1)] = malloc(32);
+if (!arr[(i - 1)])
+return (NULL);
+
+strcopy(line[i], arr[(i - 1)]);
+i++;
 }
-/**
- * _execute -executes binary files commands
- * @command - character pointer
- * @args: pointer to command string
- * @env: pointer to envronment string
- * Return: void
- */
-void _execute(char **args, char **env, char **command)
-{
-	pid_t pid;
 
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("Error in forking");
-		exit(EXIT_FAILURE);
-	}
-	else if (pid == 0)
-	{
-		if (execve(args[0], args, env) == -1)
-			perror(*command);
-	}
-	else
-	{
-		waitpid(pid, NULL, 0);
-	}
+return (arr);
 }
 
 /**
-* exitor - a function to exit from the program
-* @line: an array of command and arguments
-*
-* Return: no return
-*/
+ * intHandler - this is a function to handle the ctrl-c signal
+ * @sig_num: an integer signal indicator
+ *
+ * Return: void function
+ */
 
-int exitor(char *line[])
+void intHandler(int sig_num __attribute__((unused)))
 {
-int i = 0;
-if (line[1] == NULL)
+signal(SIGINT, intHandler);
+write(1, "\n", 2);
+printprompt(0);
+fflush(stdout);
+}
+
+/**
+ * main - a the main function of the shell
+ * @argc: the number of arguments given
+ * @argv: an arr of given argument strings
+ *
+ * Return: returns an integer
+ */
+
+int main(int argc __attribute__((unused)), char **argv)
 {
-exit(EXIT_SUCCESS); }
-else if (atoi(line[1]) > 0)
+char *line;
+
+line = malloc(256);
+if (!line)
 {
-i = atoi(line[1]); }
-free(line);
-exit(i);
+perror("Allocation");
+exit(1);
+}
+
+if (!isatty(STDIN_FILENO))
+{
+if (getstr(line) == (-1))
+{
+write(1, "\n", 2);
+exit(1);
+}
+if (shellprocessor(strbrk(line, ' '), argv) == -1)
+{
+perror("Error");
+}
+
+exit(0);
+}
+
+do {
+printprompt(0);
+if (getstr(line) == (-1))
+{
+write(1, "\n", 2);
+exit(0);
+}
+
+if ((shellprocessor(strbrk(line, ' '), argv)) == -1)
+{
+perror("Error");
+}
+} while (1);
+
+return (0);
 }
