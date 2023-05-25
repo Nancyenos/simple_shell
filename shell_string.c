@@ -32,7 +32,7 @@ if (line[0][siz - 2] == '\\')
 do {
 str[strleng(str) - 1] = ' ';
 siz = 0;
-printprompt(1);
+prompt(1);
 
 if ((getline(line, &siz, stdin)) == -1)
 {

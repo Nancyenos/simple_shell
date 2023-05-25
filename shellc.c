@@ -14,11 +14,11 @@ selecte selector[] = {
 {"ls", list},
 {"l", list},
 {"ll", list},
-{"exit", exitor},
+{"exit", exiter},
 {"echo", echorr},
-{"cd", changedire},
-{"cat", cater},
-{"pwd", pwder},
+{"cd", changedir},
+{"cat", concat},
+{"pwd", pwds},
 {"env", envir},
 {"printenv", envir},
 {"/bin/printenv", envir},
@@ -76,11 +76,45 @@ exit(EXIT_FAILURE); }
 else
 {
 write(1, line[0], strleng(line[0]));
-write(1, ": not found\n", strleng(": not found\n"));
+write(1, ": command not found\n", strleng(": command not found\n"));
 exit(EXIT_FAILURE); }}
 }
 else
 {
 getfunc(line[0])(line); }
 return (1);
+}
+
+/**
+ * strcomp - a function to compare two strings
+ * @str: the first string to compare
+ * @equ: the secodn string to comapre too
+ *
+ * Return: returns an integer indicater of the boolean
+ */
+
+int strcomp(char *str, char *equ)
+{
+int i = 0;
+int result = 0;
+
+if (str == NULL || equ == NULL)
+{
+return (0);
+}
+while (equ[i] != '\0' || str[i] != '\0')
+{
+
+if (str[i] == equ[i])
+{
+result = 1;
+}
+else
+{
+result = 0;
+}
+i++;
+}
+
+return (result);
 }

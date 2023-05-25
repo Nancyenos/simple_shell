@@ -1,10 +1,10 @@
 #include "shell.h"
 
 /**
- * copyarr - This is a function to copy string array to another 
- *              string array variable
+ * copyarr - This is a function to copy string array to another
+ *			string array variable
  * @line: a string array to be copied
- * 
+ *
  * Return: returns the copied array
  */
 
@@ -41,7 +41,7 @@ void intHandler(int sig_num __attribute__((unused)))
 {
 signal(SIGINT, intHandler);
 write(1, "\n", 2);
-printprompt(0);
+prompt(0);
 fflush(stdout);
 }
 
@@ -80,7 +80,7 @@ exit(0);
 }
 
 do {
-printprompt(0);
+prompt(0);
 if (getstr(line) == (-1))
 {
 write(1, "\n", 2);

@@ -1,8 +1,8 @@
 #include "shell.h"
 
 /**
- * __getchar - this is a function that reads a character from the standard input
- *
+ * __getchar - this is a function that reads a
+ *		character from the standard input
  * Return: returns the read character
  */
 
@@ -75,7 +75,7 @@ return (*lent);
 }
 
 /**
- * echor - a function to echo back any text you gave it
+ * echor - a function to echo any text input
  * @line: an array of command and arguments
  *
  * Return: returns 1 in success and -1 if it fails

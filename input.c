@@ -1,13 +1,13 @@
 #include "shell.h"
 
 /**
-* printprompt - a function to display the enter command character
+* prompt - a function to display the enter command character
 * @i: an integer value to indicate which icon to display
 *
 * Return: void
 */
 
-void printprompt(int i)
+void prompt(int i)
 {
 if (i == 0)
 {
@@ -20,13 +20,13 @@ write(1, "#cisfun> ", strleng("#cisfun> "));
 }
 
 /**
-* exitor - a function to exit from the program
+* exiter - a function to exit from the program
 * @line: an array of command and arguments
 *
 * Return: no return
 */
 
-int exitor(char *line[])
+int exiter(char *line[])
 {
 int i = 0;
 if (line[1] == NULL)
@@ -40,13 +40,13 @@ exit(i);
 }
 
 /**
-* changedire - a function to change a directory
+* changedir - a function to change a directory
 * @line: an array of commands and arguments
 *
 * Return: returns 0 in success and -1 if it fails
 */
 
-int changedire(char **line)
+int changedir(char **line)
 {
 if (line[1] == NULL)
 {

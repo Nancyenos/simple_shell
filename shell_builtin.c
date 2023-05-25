@@ -1,13 +1,13 @@
 #include "shell.h"
 
 /**
-* lister - a function which excutes the /bin/ls program to list files
+* list - a function which excutes the /bin/ls program to list files
 * @line: an array of command and arguments
 *
 * Return: returns 1 in success and -1 if it fails
 */
 
-int lister(char *line[])
+int list(char *line[])
 {
 int status;
 pid_t waiter, child;
@@ -36,13 +36,13 @@ return (1);
 }
 
 /**
-* cater - a function which excutes the /bin/cat program to show text files
+* concat - a function which excutes the /bin/cat program
 * @line: an array of command and arguments
 *
 * Return: returns 1 in success and -1 if it fails
 */
 
-int cater(char *line[])
+int concat(char *line[])
 {
 int status;
 pid_t waiter, child;
@@ -110,13 +110,13 @@ return (0);
 }
 
 /**
-* pwder - a function which prints the current path
+* pwds - a function which prints the current path
 * @line: an array of command and arguments
 *
 * Return: returns 1 in success and -1 if it fails
 */
 
-int pwder(char *line[])
+int pwds(char *line[])
 {
 int status;
 pid_t waiter, child;
