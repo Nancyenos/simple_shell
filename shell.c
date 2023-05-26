@@ -1,97 +1,134 @@
 #include "shell.h"
 
+int fork_exec(char **args, char **front);
+int main(int argc, char *argv[]);
+
 /**
- * copyarr - This is a function to copy string array to another
- *			string array variable
- * @line: a string array to be copied
- *
- * Return: returns the copied array
+ * sig_handlr - It Prints a new prompt upon a signal.
+ * @sig: The signal.
  */
-
-char **copyarr(char **line)
+void sig_handlr(int sig)
 {
-char **arr;
-int i = 1;
+	char *nw_prompt = "#cisfun$ \n";
 
-arr = malloc(64);
-if (!arr)
-return (NULL);
-
-while (line[i] != NULL)
-{
-arr[(i - 1)] = malloc(32);
-if (!arr[(i - 1)])
-return (NULL);
-
-strcopy(line[i], arr[(i - 1)]);
-i++;
-}
-
-return (arr);
+	(void)sig;
+	signal(SIGINT, sig_handlr);
+	write(STDIN_FILENO, nw_prompt, 3);
 }
 
 /**
- * intHandler - this is a function to handle the ctrl-c signal
- * @sig_num: an integer signal indicator
+ * fork_exec - Executes a command in a child process.
+ * @args: An array of arguments.
+ * @front: A double pointer to the beginning of args.
  *
- * Return: void function
+ * Return: If an error occurs - a corresponding error code.
+ *         O/w - The exit value of the last executed command.
  */
-
-void intHandler(int sig_num __attribute__((unused)))
+int fork_exec(char **args, char **front)
 {
-signal(SIGINT, intHandler);
-write(1, "\n", 2);
-prompt(0);
-fflush(stdout);
+	pid_t child_pid;
+	int status, flag = 0, ret = 0;
+	char *cmd = args[0];
+
+	if (cmd[0] != '/' && cmd[0] != '.')
+	{
+		flag = 1;
+		cmd = get_location(cmd);
+	}
+
+	if (!cmd || (access(cmd, F_OK) == -1))
+	{
+		if (errno == EACCES)
+			ret = (create_error(args, 126));
+		else
+			ret = (create_error(args, 127));
+	}
+	else
+	{
+		child_pid = fork();
+		if (child_pid == -1)
+		{
+			if (flag)
+				free(cmd);
+			perror("Error child:");
+			return (1);
+		}
+		if (child_pid == 0)
+		{
+			execve(cmd, args, environ);
+			if (errno == EACCES)
+				ret = (create_error(args, 126));
+			free_env();
+			free_args(args, front);
+			free_alias_list(aliases);
+			_exit(ret);
+		}
+		else
+		{
+			wait(&status);
+			ret = WEXITSTATUS(status);
+		}
+	}
+	if (flag)
+		free(cmd);
+	return (ret);
 }
 
 /**
- * main - a the main function of the shell
- * @argc: the number of arguments given
- * @argv: an arr of given argument strings
+ * main - Runs a simple UNIX command interpreter.
+ * @argc: The number of arguments supplied to the program.
+ * @argv: An array of pointers to the arguments.
  *
- * Return: returns an integer
+ * Return: The return value of the last executed command.
  */
-
-int main(int argc __attribute__((unused)), char **argv)
+int main(int argc, char *argv[])
 {
-char *line;
+	int ret = 0, retn;
+	int *last_exe = &retn;
+	char *prompt = "#cisfun$ ", *new_line = "\n";
 
-line = malloc(256);
-if (!line)
-{
-perror("Allocation");
-exit(1);
-}
+	name = argv[0];
+	hist = 1;
+	aliases = NULL;
+	signal(SIGINT, sig_handlr);
 
-if (!isatty(STDIN_FILENO))
-{
-if (getstr(line) == (-1))
-{
-write(1, "\n", 2);
-exit(1);
-}
-if (shellprocessor(strbrk(line, ' '), argv) == -1)
-{
-perror("Error");
-}
+	*last_exe = 0;
+	environ = _copyenv();
+	if (!environ)
+		exit(-100);
 
-exit(0);
-}
+	if (argc != 1)
+	{
+		ret = proc_file_commands(argv[1], last_exe);
+		free_env();
+		free_alias_list(aliases);
+		return (*last_exe);
+	}
 
-do {
-prompt(0);
-if (getstr(line) == (-1))
-{
-write(1, "\n", 2);
-exit(0);
-}
+	if (!isatty(STDIN_FILENO))
+	{
+		while (ret != END_OF_FILE && ret != EXIT)
+			ret = handle_args(last_exe);
+		free_env();
+		free_alias_list(aliases);
+		return (*last_exe);
+	}
 
-if ((shellprocessor(strbrk(line, ' '), argv)) == -1)
-{
-perror("Error");
-}
-} while (1);
+	while (1)
+	{
+		write(STDOUT_FILENO, prompt, 9);
+		ret = handle_args(last_exe);
+		if (ret == END_OF_FILE || ret == EXIT)
+		{
+			if (ret == END_OF_FILE)
+				write(STDOUT_FILENO, new_line, 1);
+			free_env();
+			free_alias_list(aliases);
+			exit(*last_exe);
+		}
+	}
 
-return (0);
+	free_env();
+	free_alias_list(aliases);
+	return (*last_exe);
 }
